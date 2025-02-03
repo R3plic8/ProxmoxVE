@@ -48,15 +48,21 @@ if [[ "$CTTYPE" == "0" ]]; then
 fi
 msg_ok "Set Up Hardware Acceleration"
 
-RELEASE="v0.15.0-rc2"
 msg_ok "Stop spinner to prevent segmentation fault"
-msg_info "Installing Frigate $RELEASE (Perseverance)"
+msg_info "Installing Frigate v0.15.0-rc2 (Perseverance)"
 if [ -n "$SPINNER_PID" ] && ps -p $SPINNER_PID > /dev/null; then kill $SPINNER_PID > /dev/null; fi
 cd ~
 mkdir -p /opt/frigate/models
-RELEASE="v0.15.0-rc2"
-wget --no-cache -q https://github.com/blakeblackshear/frigate/archive/refs/tags/${RELEASE}.tar.gz -O frigate.tar.gz
+wget -q --no-cache "https://github.com/blakeblackshear/frigate/archive/refs/tags/v0.15.0-rc2.tar.gz" -O frigate.tar.gz
+if [ $? -ne 0 ]; then
+    echo "Failed to download Frigate v0.15.0-rc2"
+    exit 1
+fi
 tar -xzf frigate.tar.gz -C /opt/frigate --strip-components 1
+if [ $? -ne 0 ]; then
+    echo "Failed to extract Frigate archive"
+    exit 1
+fi
 rm -rf frigate.tar.gz
 cd /opt/frigate
 $STD pip3 wheel --wheel-dir=/wheels -r /opt/frigate/docker/main/requirements-wheels.txt
