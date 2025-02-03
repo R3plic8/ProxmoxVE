@@ -48,13 +48,14 @@ if [[ "$CTTYPE" == "0" ]]; then
 fi
 msg_ok "Set Up Hardware Acceleration"
 
-RELEASE=$(curl -s https://github.com/blakeblackshear/frigate/releases/tag/v0.15.0-rc2 | jq -r '.tag_name')
+RELEASE=$(curl -s 'https://api.github.com/repos/blakeblackshear/frigate/releases?per_page=100' | jq -r '[.[] | select(.prerelease == true)] | .[0].tag_name')
 msg_ok "Stop spinner to prevent segmentation fault"
 msg_info "Installing Frigate $RELEASE (Perseverance)"
 if [ -n "$SPINNER_PID" ] && ps -p $SPINNER_PID > /dev/null; then kill $SPINNER_PID > /dev/null; fi
 cd ~
 mkdir -p /opt/frigate/models
-wget -q https://github.com/blakeblackshear/frigate/archive/refs/tags/v0.15.0-rc2.tar.gz -O frigate.tar.gz
+RELEASE="v0.15.0-rc2"
+wget -q https://github.com/blakeblackshear/frigate/archive/refs/tags/${RELEASE}.tar.gz -O frigate.tar.gz
 tar -xzf frigate.tar.gz -C /opt/frigate --strip-components 1
 rm -rf frigate.tar.gz
 cd /opt/frigate
